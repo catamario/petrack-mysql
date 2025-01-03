@@ -63,6 +63,8 @@ class Search_People(Frame):
         )
         back_button.pack(pady=10)
 
+
+
     def cautare_persoana(self, name_entry):
         conn = get_connection()
         cursor = conn.cursor()
@@ -83,6 +85,8 @@ class Search_People(Frame):
 
         if not persoana_gasita:
             self.confirmation_label.config(text=f"The person named {nume}\n doesn't exist")
+        conn.close()
+        cursor.close()
 
     def reset_page(self):
         self.confirmation_label.config(text="CONFIRMATION MESSAGE", fg="#FF0000")

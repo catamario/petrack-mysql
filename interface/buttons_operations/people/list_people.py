@@ -71,6 +71,8 @@ class List_People(Frame):
             all_persoane = cursor.fetchall()
         except:
             print("Eroare MYSQL")
+
+
         if all_persoane:
             def get_nume(all_persoane):
                 nume_list = []
@@ -83,6 +85,8 @@ class List_People(Frame):
 
         nume_list = get_nume(all_persoane)
         self.output_label.config(text="\n".join(nume_list))
+        conn.close()
+        cursor.close()
 
     def reset_page(self):
         self.output_label.config(text="")  # Golește lista

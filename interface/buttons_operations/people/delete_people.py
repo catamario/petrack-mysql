@@ -70,25 +70,27 @@ class Delete_People(Frame):
             query = "SELECT nume FROM all_persoane"
             cursor.execute(query)
             all_persoane=cursor.fetchall()
+
+            nume = name_entry.get()
+            persoana_gasita = False
+
+            for persoana in all_persoane:
+                if persoana[0] == nume:
+                    delete_query = "DELETE FROM all_persoane WHERE nume = %s"
+                    cursor.execute(delete_query, (nume,))
+                    conn.commit()  # Confirmăm modificarea în baza de date
+                    persoana_gasita = True
+                    break
+
+            if persoana_gasita:
+                self.confirmation_label.config(text=f"The person {nume} \nhas been deleted successfully", fg="#00FF00")
+            else:
+                self.confirmation_label.config(text=f"Couldn't find {nume}", fg="#FF0000")
         except:
             print("Eroare MySQL")
-        nume = name_entry.get()
-        persoana_gasita = False
-
-
-        for persoana in all_persoane:
-            if persoana[0] == nume:
-                delete_query = "DELETE FROM all_persoane WHERE nume = %s"
-                cursor.execute(delete_query, (nume,))
-                conn.commit()  # Confirmăm modificarea în baza de date
-                persoana_gasita = True
-                break
-
-
-        if persoana_gasita:
-            self.confirmation_label.config(text=f"The person {nume} \nhas been deleted successfully", fg="#00FF00")
-        else:
-            self.confirmation_label.config(text=f"Couldn't find {nume}", fg="#FF0000")
+        finally:
+            conn.close()
+            cursor.close()
 
 
     def reset_page(self):

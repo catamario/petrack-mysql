@@ -92,20 +92,23 @@ class Edit_People(Frame):
             query = "SELECT persoana_id, nume, adresa FROM all_persoane"
             cursor.execute(query)
             all_persoane = cursor.fetchall()
+
+            if all_persoane:
+                for persoana in all_persoane:
+                    if int(id) == persoana[0]:
+                        update_query = "UPDATE all_persoane SET nume = %s, adresa = %s WHERE persoana_id = %s"
+                        cursor.execute(update_query, (name, address, int(id)))
+                        conn.commit()
+                        self.confirmation_label.config(text=f"The person with id {id} \nhas been edited successfully",
+                                                       fg="#00FF00")
+                        break
+            else:
+                self.confirmation_label.config(text=f"Couldn't find id {id}", fg="#FF0000")
         except:
             print("Eroare MySQL")
-
-        if all_persoane:
-            for persoana in all_persoane:
-                if int(id) == persoana[0]:
-                    update_query = "UPDATE all_persoane SET nume = %s, adresa = %s WHERE persoana_id = %s"
-                    cursor.execute(update_query, (name, address, int(id)))
-                    conn.commit()
-                    self.confirmation_label.config(text=f"The person with id {id} \nhas been edited successfully",
-                                                   fg="#00FF00")
-                    break
-        else:
-            self.confirmation_label.config(text=f"Couldn't find id {id}", fg="#FF0000")
+        finally:
+            conn.close()
+            cursor.close()
 
     def reset_page(self):
         self.confirmation_label.config(text="CONFIRMATION MESSAGE", fg="#FF0000")

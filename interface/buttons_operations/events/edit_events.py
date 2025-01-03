@@ -1,4 +1,5 @@
 from tkinter import *
+from database.db_connection import get_connection
 
 class Edit_Events(Frame):
     def __init__(self, parent, controller):
@@ -28,30 +29,30 @@ class Edit_Events(Frame):
         # ID
         id_label = Label(form, text="id:", font=("Arial", 20), fg="#FFFFFF", bg="#333333")
         id_label.grid(row=0, column=0, padx=10, pady=5, sticky="e")
-        id_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
-        id_entry.grid(row=0, column=1, padx=10, pady=5)
+        self.id_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
+        self.id_entry.grid(row=0, column=1, padx=10, pady=5)
 
         # DATE
         date_label = Label(form, text="date:", font=("Arial", 20), fg="#FFFFFF", bg="#333333")
         date_label.grid(row=1, column=0, padx=10, pady=5, sticky="e")
-        date_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
-        date_entry.grid(row=1, column=1, padx=10, pady=5)
+        self.date_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
+        self.date_entry.grid(row=1, column=1, padx=10, pady=5)
 
         # TIME
         time_label = Label(form, text="time:", font=("Arial", 20), fg="#FFFFFF", bg="#333333")
         time_label.grid(row=2, column=0, padx=10, pady=5, sticky="e")
-        time_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
-        time_entry.grid(row=2, column=1, padx=10, pady=5)
+        self.time_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
+        self.time_entry.grid(row=2, column=1, padx=10, pady=5)
 
         # NAME
         name_label = Label(form, text="name:", font=("Arial", 20), fg="#FFFFFF", bg="#333333")
         name_label.grid(row=3, column=0, padx=10, pady=5, sticky="e")
-        name_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
-        name_entry.grid(row=3, column=1, padx=10, pady=5)
+        self.name_entry = Entry(form, font=("Arial", 16), bg="#DDDDDD", fg="#000000")
+        self.name_entry.grid(row=3, column=1, padx=10, pady=5)
 
         # Mesaj de confirmare
-        confirmation_label = Label(form, text="MESAJ DE CONFIRMARE\nROSU/VERDE", font=("Arial", 14, "bold"), fg="#FF0000", bg="#333333")
-        confirmation_label.grid(row=4, column=1, padx=10, pady=5)
+        self.confirmation_label = Label(form, text="MESAJ DE CONFIRMARE\nROSU/VERDE", font=("Arial", 14, "bold"), fg="#FF0000", bg="#333333")
+        self.confirmation_label.grid(row=4, column=1, padx=10, pady=5)
 
         # ADD BUTTON
         add_button = Button(
@@ -62,6 +63,7 @@ class Edit_Events(Frame):
             font=("Arial", 14, "bold"),
             width=15, height=2,
             relief="flat",
+            command=lambda: self.modifica_eveniment(self.id_entry, self.date_entry, self.time_entry, self.name_entry)
         )
         add_button.pack()
 
@@ -74,6 +76,45 @@ class Edit_Events(Frame):
             font=("Arial", 14, "bold"),
             width=15,height=2,
             relief="flat",
-            command=lambda: controller.show_frame("EventsPage")  # Navighează înapoi la MainPage
+            command=lambda: (self.reset_page(), controller.show_frame("EventsPage"))  # Navighează înapoi la MainPage
         )
         back_button.pack(pady=10)
+
+
+
+    def modifica_eveniment(self, id_entry, date_entry, time_entry, name_entry):
+        id=int(id_entry.get())
+        data=date_entry.get()
+        time=time_entry.get()
+        name=name_entry.get()
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            query = "SELECT eveniment_id, data, ora, descriere FROM all_evenimente"
+            cursor.execute(query)
+            all_lista = cursor.fetchall()
+
+            if all_lista:
+                for eveniment in all_lista:
+                    if id == eveniment[0]:
+                        update_query = "UPDATE all_evenimente SET data = %s, ora = %s, descriere = %s WHERE eveniment_id = %s"
+                        cursor.execute(update_query, (data, time, name, id))
+                        conn.commit()
+                        self.confirmation_label.config(text=f"The event with id {id} \nhas been edited successfully",
+                                                       fg="#00FF00")
+                        break
+            else:
+                self.confirmation_label.config(text=f"Couldn't find id {id}", fg="#FF0000")
+        except:
+            print("Eroare MySQL")
+        finally:
+            conn.close()
+            cursor.close()
+
+    def reset_page(self):
+        self.confirmation_label.config(text="CONFIRMATION MESSAGE", fg="#FF0000")
+        self.id_entry.delete(0, END)
+        self.date_entry.delete(0, END)
+        self.time_entry.delete(0, END)
+        self.name_entry.delete(0, END)

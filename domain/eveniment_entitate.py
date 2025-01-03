@@ -1,7 +1,16 @@
-def add_eveniment(all_evenimente, eveniment_id, data, ora, descriere):
-    if find_by_id_eveniment(all_evenimente, eveniment_id) is None:
-        eveniment = Eveniment(eveniment_id, data, ora, descriere)
-        all_evenimente.append(eveniment)
+from database.db_connection import get_connection
+
+def add_eveniment(eveniment_id, data, ora, descriere):
+    if find_by_id_eveniment(eveniment_id) is None:
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            query = "INSERT INTO all_evenimente (eveniment_id, data, ora, descriere) VALUES (%s, %s, %s, %s)"
+            cursor.execute(query, (eveniment_id, data, ora, descriere))
+            conn.commit()
+        finally:
+            cursor.close()
+            conn.close()
     else:
         raise ValueError("Evenimentul cu acest ID există deja.")
 
@@ -71,9 +80,16 @@ class Eveniment:
 
 
 
-def find_by_id_eveniment(all_lista, id):
-    if all_lista:
-        for eveniment in all_lista:
-            if id == eveniment.get_eveniment_id():
-                return eveniment
-    return None
+def find_by_id_eveniment(id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        query = "SELECT eveniment_id, data, ora, descriere FROM all_evenimente WHERE eveniment_id = %s"
+        cursor.execute(query, (id,))
+        result = cursor.fetchone()
+        if result:
+            return result
+        return None
+    finally:
+        cursor.close()
+        conn.close()

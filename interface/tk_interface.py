@@ -38,11 +38,7 @@ class App(Tk):
                      Search_Events, Search_People, List_Events, List_People):
             page_name = Page.__name__
 
-            # Transmitem lista `all_persoane` și `all_events` doar către paginile care au nevoie
-            if Page == Add_Events:
-                frame = Page(parent=self.container, controller=self, all_events=self.all_events)
-            else:
-                frame = Page(parent=self.container, controller=self)
+            frame = Page(parent=self.container, controller=self)
 
             self.frames[page_name] = frame
 

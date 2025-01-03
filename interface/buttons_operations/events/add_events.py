@@ -1,9 +1,9 @@
 from tkinter import *
-from domain.eveniment_entitate import add_eveniment
+from domain.eveniment_entitate import add_eveniment, find_by_id_eveniment
 
 
 class Add_Events(Frame):
-    def __init__(self, parent, controller, all_events):
+    def __init__(self, parent, controller):
         super().__init__(parent, bg="#333333")
         self.controller = controller
 
@@ -64,7 +64,7 @@ class Add_Events(Frame):
             font=("Arial", 14, "bold"),
             width=15, height=2,
             relief="flat",
-            command=lambda: self.ui_add_eveniment(all_events)
+            command=lambda: self.ui_add_eveniment()
         )
         add_button.pack()
 
@@ -83,13 +83,13 @@ class Add_Events(Frame):
 
 
 
-    def ui_add_eveniment(self, all_evenimente):
+    def ui_add_eveniment(self):
         eveniment_id = int(self.id_entry.get())
         data = self.date_entry.get()
         ora = self.time_entry.get()
         descriere = self.name_entry.get()
         try:
-            add_eveniment(all_evenimente, eveniment_id, data, ora, descriere)
+            add_eveniment(eveniment_id, data, ora, descriere)
             self.confirmation_label.config(text="Event added successfully", fg="#00FF00")
         except:
             ValueError
