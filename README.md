@@ -9,12 +9,8 @@
   <tr>
     <td><img src="https://github.com/user-attachments/assets/519fe4b3-b7fb-40c1-8329-aea45346b204" width="350" />
     <p style="text-align:center;">People management ( CRUD Operations )</p></td>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <img src="https://github.com/user-attachments/assets/e7b92583-b8d7-44b5-94de-9aa87908440d" width="500" />
-      <p style="text-align:center;">Events management ( CRUD Operations )</p></td>
-    </td>
+    <td><img src="https://github.com/user-attachments/assets/e7b92583-b8d7-44b5-94de-9aa87908440d" width="500" />
+    <p style="text-align:center;">Events management ( CRUD Operations )</p></td>
   </tr>
 </table>
 
